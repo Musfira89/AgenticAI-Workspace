@@ -1,0 +1,124 @@
+python==3.12 -- most stable version
+
+why we using groq?
+
+Grok is a fast AI inference. this actually provides you the access to open source LLM models for some number of
+tokens, completely for free.
+
+Okay, so this speed is the most amazing thing about grok.
+
+here you can see for models, LLM models like llama 3.18 in the grok.
+It is very, very fast when compared to all the other models.
+And the reason why it is fast is that, there is something called as, language processing unit.
+
+
+##✅section 10 -- last video ##
+What does add_messages do?
+
+" add_messages merges two list of messages updating existing message by ID by default"
+
+Let’s break it:
+Imagine chatbot state stores messages like this:
+
+[
+  {"id": 1, "role": "human", "content": "Hello"},
+  {"id": 2, "role": "ai", "content": "Hi! How can I help?"}
+]
+
+
+If the user sends another message, add_messages will merge it into the existing list:
+
+// state 1
+[
+  {"id": 1, "role": "human", "content": "Hello"},
+  {"id": 2, "role": "ai", "content": "Hi! How can I help?"},
+  {"id": 3, "role": "human", "content": "What’s the weather?"}
+]
+
+//state 2
+[
+  {"id": 1, "role": "human", "content": "Hello"},
+  {"id": 2, "role": "ai", "content": "Hi! How can I help?"},
+  {"id": 3, "role": "human", "content": "What’s the weather?"}
+]
+merge lists using add_messages when state updates
+
+If a new message has the same ID as an old one, it will update instead of adding a duplicate.
+
+👉This ensures:
+
+Conversation history is append-only (new messages get added).
+Unless there’s an update (same ID), in which case it replaces the old message.
+That’s why it works for human messages and AI messages together → they’re just stored in one conversation list.
+
+
+**✅State Class
+class State(TypedDict): 
+    messages: Annotated[list, add_messages]
+
+
+State: This defines what our chatbot’s state looks like.
+
+messages:
+Must be a list.
+But we tell LangGraph: "When updating this list, use add_messages."
+
+So the chatbot state will always look like:
+
+{
+  "messages": [   # list of conversation history
+    {"id": 1, "role": "human", "content": "Hello"},
+    {"id": 2, "role": "ai", "content": "Hi! How can I help?"}
+  ]
+}
+
+
+**✅State update means?**
+
+What does "state updates" mean?
+
+In LangGraph, your state is like the chatbot’s memory at any moment.
+
+A state update happens when new input or output messages arrive (for example, user types something, AI replies).
+
+So every time something new comes in → we update the state.
+
+
+
+✅Example:
+
+First list (old state messages):
+This is what the chatbot already remembers from earlier in the conversation.
+
+Example:
+
+[
+  {"id": 1, "role": "human", "content": "Hello"},
+  {"id": 2, "role": "ai", "content": "Hi! How can I help?"}
+]
+
+
+Second list (new messages):
+This is the fresh message(s) coming in.
+
+Example:
+
+[
+  {"id": 3, "role": "human", "content": "What’s the weather?"}
+]
+
+
+Merging (with add_messages):
+Instead of replacing the old list with the new one, we append/merge them.
+After merging:
+
+[
+  {"id": 1, "role": "human", "content": "Hello"},
+  {"id": 2, "role": "ai", "content": "Hi! How can I help?"},
+  {"id": 3, "role": "human", "content": "What’s the weather?"}
+]
+
+Why is this useful?
+Because:
+Without merging, the chatbot would forget previous messages (it would only keep the latest one).
+With add_messages, we keep the whole conversation history, so the AI can respond with context.
