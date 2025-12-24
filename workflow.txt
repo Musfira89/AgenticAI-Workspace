@@ -1,0 +1,73 @@
+Parallelization Workflow:
+
+Fixed, predetermined structure
+All tasks are known upfront and can run simultaneously
+No dependencies between tasks
+No central coordinator making decisions
+Results are simply aggregated at the end
+
+Example: Analyzing 5 different documents for sentiment
+
+Task 1: Analyze doc1 → runs immediately
+Task 2: Analyze doc2 → runs immediately
+Task 3: Analyze doc3 → runs immediately
+(all at once, then combine results)
+
+
+Orchestrator Workflow:
+
+Dynamic, adaptive structure
+Central LLM decides what tasks to create as it goes
+Tasks might run in parallel, sequence, or both
+Orchestrator interprets results and plans next steps
+Can create new tasks based on intermediate results
+
+Example: Research a complex topic
+
+Orchestrator: "I need to understand topic X"
+Creates Task 1: Search for overview → Worker completes
+Orchestrator reviews result: "I found 3 subtopics, need to investigate each"
+Creates Tasks 2a, 2b, 2c in parallel → Workers complete
+Orchestrator reviews: "2a needs deeper analysis"
+Creates Task 3 based on 2a's findings
+Synthesizes everything
+
+The Core Difference
+Parallelization = "Run these 5 predefined things at once, then merge"
+Orchestrator = "Figure out what needs to be done, assign work, review results, decide what to do next
+(which might include more parallel work)"
+An orchestrator can use parallelization as one of its strategies, but it's fundamentally about dynamic 
+planning and adaptation, not just concurrent execution.
+
+or 
+Key point: The chef (orchestrator) makes decisions step by step based on what they learn. 
+They don't know the full plan from the beginning.
+
+Simple Difference
+Parallelization:
+
+"Do A, B, and C at the same time" ✅ Already decided
+
+Orchestrator:
+
+"Let me see... do A first... okay based on A's result, now do B and C... hmm, now I need to do D..." 🤔 Deciding as you go
+
+The orchestrator is like a smart manager who thinks and plans. Parallelization is just doing multiple things at once.
+
+
+
+Syntax:
+prompt = f"""
+
+Purpose:
+Creates a dynamic prompt that summarizes:
+
+The user query
+What analysis steps are already completed
+Asks the LLM to decide the next action
+
+Syntax
+f""" ... """
+
+f → enables string interpolation
+Triple quotes → multiline string
